@@ -12,7 +12,7 @@ def embed_bert(
     texts: list[str],
     tokenizer: PreTrainedTokenizer | PreTrainedTokenizerFast,
     encoder: nn.Module,
-    batch_size: int = 32,
+    batch_size: int = 64,
 ) -> np.ndarray:
     """bert SimCSEのモデルを用いてテキストの埋め込みを計算"""
     embeddings = []
@@ -49,7 +49,7 @@ def embed_l2v(
     texts: list[str],
     tokenizer: PreTrainedTokenizer | PreTrainedTokenizerFast,
     decoder: nn.Module,
-    batch_size: int = 32,
+    batch_size: int = 64,
 ) -> np.ndarray:
     """l2v SimCSEのモデルを用いてテキストの埋め込みを計算"""
     embeddings = []

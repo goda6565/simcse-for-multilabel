@@ -18,7 +18,8 @@ def execute_cls(
     run = wandb.init(project="xgb-cls", name=f"{model_name}-{type}")
     """XGBoostを使って分類を行う"""
     # モデルを初期化
-    model = xgb.XGBClassifier(tree_method="hist", device="cuda", verbosity=1)
+    xgb.set_config(verbosity=1)
+    model = xgb.XGBClassifier(tree_method="hist", device="cuda")
     # モデルを訓練
     model.fit(X_train, y_train)
     # 予測を行う

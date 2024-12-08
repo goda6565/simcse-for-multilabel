@@ -70,14 +70,14 @@ def sup_scl_train_collate_fn(
         [example["text"] for example in examples],
         padding=True,
         truncation=True,
-        max_length=256,
+        max_length=512,
         return_tensors="pt",
     )  # type: ignore
     tokenized_texts2 = tokenizer(
         [example["same_label_text"] for example in examples],
         padding=True,
         truncation=True,
-        max_length=256,
+        max_length=512,
         return_tensors="pt",
     )  # type: ignore
 
@@ -109,14 +109,14 @@ def sup_not_scl_train_collate_fn(
         [example["text"] for example in examples],
         padding=True,
         truncation=True,
-        max_length=256,
+        max_length=512,
         return_tensors="pt",
     )  # type: ignore
     tokenized_texts2 = tokenizer(
         [example["same_label_text"] for example in examples],
         padding=True,
         truncation=True,
-        max_length=256,
+        max_length=512,
         return_tensors="pt",
     )  # type: ignore
 

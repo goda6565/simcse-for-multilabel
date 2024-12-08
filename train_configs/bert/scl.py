@@ -17,5 +17,5 @@ training_args = TrainingArguments(
     metric_for_best_model="f1",  # 最良のモデルを決定する評価指標
     label_names=["labels"], # ラベルを指定マルチラベル
     remove_unused_columns=False,  # データセットの不要フィールドを削除するか
-    report_to=None
+    report_to="wandb"
 )

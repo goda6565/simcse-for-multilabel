@@ -3,8 +3,8 @@ from transformers import TrainingArguments
 # 訓練のハイパーパラメータを設定する
 training_args = TrainingArguments(
     output_dir="outputs/bert/unsup",  # 結果の保存先フォルダ
-    per_device_train_batch_size=64,  # 訓練時のバッチサイズ
-    per_device_eval_batch_size=64,  # 評価時のバッチサイズ
+    per_device_train_batch_size=32,  # 訓練時のバッチサイズ
+    per_device_eval_batch_size=32,  # 評価時のバッチサイズ
     learning_rate=1e-5,  # 学習率
     num_train_epochs=1,  # 訓練エポック数
     evaluation_strategy="steps",  # 検証セットによる評価のタイミング
@@ -17,5 +17,5 @@ training_args = TrainingArguments(
     metric_for_best_model="f1",  # 最良のモデルを決定する評価指標
     label_names=["labels"], # ラベルを指定マルチラベル
     remove_unused_columns=False,  # データセットの不要フィールドを削除するか
-    report_to=None
+    report_to="wandb"
 )

@@ -19,5 +19,5 @@ training_args = TrainingArguments(
     label_names=["labels"], # ラベルを指定マルチラベル
     remove_unused_columns=False,  # データセットの不要フィールドを削除するか
     optim="paged_adamw_8bit",  # 最適化手法
-    report_to=None,
+    report_to="wandb"
 )

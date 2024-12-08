@@ -8,6 +8,9 @@ from l2v.utils.collates import eval_collate_fn, unsup_train_collate_fn
 from train_configs.l2v.unsup import training_args
 from l2v.models.unsup import SimCSEModel
 from l2v.utils.l2v import setup_l2v
+import wandb
+
+wandb.init(project="simcse-l2v", name="unsup")
 
 
 # 乱数のシードを設定する

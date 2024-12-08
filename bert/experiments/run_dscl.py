@@ -10,6 +10,9 @@ from utils.metrics import compute_metrics
 from bert.utils.collates import eval_collate_fn, sup_not_scl_train_collate_fn
 from bert.models.dscl import SimCSEModel
 from bert.utils.bert import setup_bert
+import wandb
+
+wandb.init(project="simcse-bert", name="dscl")
 
 
 # 乱数のシードを設定する

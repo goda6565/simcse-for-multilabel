@@ -32,6 +32,7 @@ def setup_l2v() -> tuple[nn.Module, PreTrainedTokenizer | PreTrainedTokenizerFas
         torch_dtype=torch.bfloat16,
         quantization_config=quantization_config,
         device_map="cuda" if torch.cuda.is_available() else "cpu",
+        attn_implementation="flash_attention_2",
         ignore_mismatched_sizes=True,
     )
     # MNTPのLoRA重みをベースモデルにマージ
@@ -42,7 +43,7 @@ def setup_l2v() -> tuple[nn.Module, PreTrainedTokenizer | PreTrainedTokenizerFas
     )
     model = model.merge_and_unload()
 
-    # 教師ありモデルの読み込み
+    # 教師なしモデルの読み込み
     model = PeftModel.from_pretrained(
         model, "McGill-NLP/LLM2Vec-Meta-Llama-3-8B-Instruct-mntp-unsup-simcse",
         ignore_mismatched_sizes=True,

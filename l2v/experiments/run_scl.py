@@ -10,7 +10,7 @@ from l2v.models.scl import SimCSEModel
 from l2v.utils.l2v import setup_l2v
 import wandb
 
-wandb.init(project="simcse-l2v", name="unscl")
+wandb.init(project="simcse-l2v", name="scl")
 
 
 # 乱数のシードを設定する

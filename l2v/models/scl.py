@@ -7,7 +7,7 @@ from transformers import BatchEncoding
 
 
 class SimCSEModel(nn.Module):
-    """l2v SimCSEのモデル"""
+    """l2v scl SimCSEのモデル"""
 
     def __init__(
         self,
@@ -39,6 +39,7 @@ class SimCSEModel(nn.Module):
 
     def forward(self, **inputs) -> ModelOutput:
         """モデルの前向き計算（訓練と検証の両方に対応）"""
+
         # 訓練と検証の両方で使われる入力データを処理
         if "tokenized_text" in inputs:
             # 検証用の処理
@@ -50,22 +51,31 @@ class SimCSEModel(nn.Module):
         # 訓練用の処理
         tokenized_texts_1 = inputs["tokenized_texts_1"]
         tokenized_texts_2 = inputs["tokenized_texts_2"]
+
         labels = inputs["labels"]
 
         # 文ペアをベクトルに変換する
         encoded_texts_1 = self.encode_texts(tokenized_texts_1)
         encoded_texts_2 = self.encode_texts(tokenized_texts_2)
 
-        # 類似度行列を作成し、交差エントロピー損失を計算
-        sim_matrix = F.cosine_similarity(
-            encoded_texts_1.unsqueeze(1),
-            encoded_texts_2.unsqueeze(0),
-            dim=2,
-        )
-        loss = F.cross_entropy(sim_matrix / self.temperature, labels)
+        # loss計算
+        loss = 0
+        for i in range(len(encoded_texts_1)):
+            # 類似度行列を作成し、交差エントロピー損失を計算
+            # 各行数
+            num_label = len(labels[i])
+            # 各行をラベル数複製する
+            repeated_tensors = [encoded_texts_1[i].clone() for _ in range(num_label)]
+            repeated_tensor_stack = torch.stack(repeated_tensors)
+            # 類似行列
+            sim_matrix = F.cosine_similarity(
+                repeated_tensor_stack.unsqueeze(1),
+                encoded_texts_2.unsqueeze(0),
+                dim=2,
+            )
+            # SCL LOSS
+            loss += (
+                F.cross_entropy(sim_matrix / self.temperature, labels[i]) / num_label
+            )
 
-        # 正例ペアのスコアを抽出
-        positive_mask = F.one_hot(labels, sim_matrix.size(1)).bool()
-        positive_scores = torch.masked_select(sim_matrix, positive_mask)
-
-        return ModelOutput(loss=loss, scores=positive_scores)
+        return ModelOutput(loss=loss)

@@ -2,9 +2,8 @@ import torch
 from torch import Tensor
 from transformers import BatchEncoding, AutoTokenizer
 
-tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B-Instruct")
-tokenizer.pad_token = tokenizer.eos_token
-tokenizer.padding_side = "left"
+base_model_name = "princeton-nlp/unsup-simcse-bert-base-uncased"
+tokenizer = AutoTokenizer.from_pretrained(base_model_name)
 
 
 def eval_collate_fn(
@@ -16,7 +15,7 @@ def eval_collate_fn(
         [example["text"] for example in examples],
         padding=True,
         truncation=True,
-        max_length=256,
+        max_length=512,
         return_tensors="pt",
     )  # type: ignore
 
@@ -38,7 +37,7 @@ def unsup_train_collate_fn(
         [example["text"] for example in examples],
         padding=True,
         truncation=True,
-        max_length=256,
+        max_length=512,
         return_tensors="pt",
     )  # type: ignore
 
@@ -70,14 +69,14 @@ def sup_scl_train_collate_fn(
         [example["text"] for example in examples],
         padding=True,
         truncation=True,
-        max_length=256,
+        max_length=512,
         return_tensors="pt",
     )  # type: ignore
     tokenized_texts2 = tokenizer(
         [example["same_label_text"] for example in examples],
         padding=True,
         truncation=True,
-        max_length=256,
+        max_length=512,
         return_tensors="pt",
     )  # type: ignore
 
@@ -109,14 +108,14 @@ def sup_not_scl_train_collate_fn(
         [example["text"] for example in examples],
         padding=True,
         truncation=True,
-        max_length=256,
+        max_length=512,
         return_tensors="pt",
     )  # type: ignore
     tokenized_texts2 = tokenizer(
         [example["same_label_text"] for example in examples],
         padding=True,
         truncation=True,
-        max_length=256,
+        max_length=512,
         return_tensors="pt",
     )  # type: ignore
 

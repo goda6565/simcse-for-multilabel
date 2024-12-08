@@ -1,29 +1,53 @@
-from llm2vec import LLM2Vec
-from peft import LoraConfig, get_peft_model  # type: ignore
+from peft import LoraConfig, get_peft_model, PeftModel  # type: ignore
 import torch
 import torch.nn as nn
-from transformers import AutoTokenizer, BitsAndBytesConfig
+from transformers import (
+    AutoTokenizer,
+    BitsAndBytesConfig,
+    AutoConfig,
+    AutoModel,
+    PreTrainedTokenizer,
+    PreTrainedTokenizerFast,
+)
 
 
-def setup_l2v() -> tuple[nn.Module, AutoTokenizer]:
+def setup_l2v() -> tuple[nn.Module, PreTrainedTokenizer | PreTrainedTokenizerFast]:
     quantization_config = BitsAndBytesConfig(
         load_in_4bit=True,
         bnb_4bit_quant_type="nf4",
         bnb_4bit_compute_dtype=torch.bfloat16,
     )
 
-    model = LLM2Vec.from_pretrained(
-        base_model_name_or_path="meta-llama/Meta-Llama-3-8B-Instruct",
-        enable_bidirectional=True,
-        peft_model_name_or_path="McGill-NLP/LLM2Vec-Meta-Llama-3-8B-Instruct-mntp",
-        merge_peft=True,
-        torch_dtype=torch.bfloat16,
-        attn_implementation="flash_attention_2",
-        attention_dropout=0.3,
-        quantization_config=quantization_config,
-        use_cache=False,
-        device_map="auto",
+    tokenizer = AutoTokenizer.from_pretrained(
+        "McGill-NLP/LLM2Vec-Meta-Llama-3-8B-Instruct-mntp"
     )
+    config = AutoConfig.from_pretrained(
+        "McGill-NLP/LLM2Vec-Meta-Llama-3-8B-Instruct-mntp", trust_remote_code=True
+    )
+    # べースモデルの読み込み
+    model = AutoModel.from_pretrained(
+        "McGill-NLP/LLM2Vec-Meta-Llama-3-8B-Instruct-mntp",
+        trust_remote_code=True,
+        config=config,
+        torch_dtype=torch.bfloat16,
+        quantization_config=quantization_config,
+        device_map="cuda" if torch.cuda.is_available() else "cpu",
+        ignore_mismatched_sizes=True,
+    )
+    # MNTPのLoRA重みをベースモデルにマージ
+    model = PeftModel.from_pretrained(
+        model,
+        "McGill-NLP/LLM2Vec-Meta-Llama-3-8B-Instruct-mntp",
+        ignore_mismatched_sizes=True,
+    )
+    model = model.merge_and_unload()
+
+    # 教師ありモデルの読み込み
+    model = PeftModel.from_pretrained(
+        model, "McGill-NLP/LLM2Vec-Meta-Llama-3-8B-Instruct-mntp-unsup-simcse",
+        ignore_mismatched_sizes=True,
+    )
+    model = model.merge_and_unload()
 
     lora_modules = [
         "q_proj",
@@ -44,9 +68,9 @@ def setup_l2v() -> tuple[nn.Module, AutoTokenizer]:
         task_type=None,
     )
 
-    model.model = get_peft_model(model.model, config)  # type: ignore
+    # LoRAを適用
+    model = get_peft_model(model, config)  # type: ignore
     print("Model's Lora trainable parameters:")
-    model.model.print_trainable_parameters()
-    tokenizer = model.tokenizer
-    model = model.model.to("cuda:0")
+    model.print_trainable_parameters()
+    model = model.to("cuda:0")
     return model, tokenizer

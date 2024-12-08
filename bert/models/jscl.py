@@ -104,5 +104,4 @@ class SimCSEModel(nn.Module):
                 loss_i += jaccard * torch.log(sim_ij / denominator)
 
             loss += -1 * loss_i / len(labels[i])
-
-        return ModelOutput(loss=loss)
+        return ModelOutput(loss=loss[0]) # type: ignore

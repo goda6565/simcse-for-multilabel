@@ -71,14 +71,14 @@ def sup_scl_train_collate_fn(
         truncation=True,
         max_length=512,
         return_tensors="pt",
-    )  # type: ignore
+    )
     tokenized_texts2 = tokenizer(
         [example["same_label_text"] for example in examples],
         padding=True,
         truncation=True,
         max_length=512,
         return_tensors="pt",
-    )  # type: ignore
+    )
 
     labels = []
     for i in range(len(examples)):
@@ -99,25 +99,26 @@ def sup_not_scl_train_collate_fn(
     for example in examples:
         index = []
         for i, pair in enumerate(examples):
-            if example["labels"] == pair["labels"]:
+            # ラベルのリスト同士の共通部分を確認
+            if set(example["labels"]) & set(pair["labels"]):
                 index.append(i)
         same_label_index.append(index)
 
-    # ミニバッチに含まれる前提文と仮説文にトークナイザを適用する
+    # ミニバッチ��含まれる前提文と仮説文にトークナイザを適用する
     tokenized_texts1 = tokenizer(
         [example["text"] for example in examples],
         padding=True,
         truncation=True,
         max_length=512,
         return_tensors="pt",
-    )  # type: ignore
+    )
     tokenized_texts2 = tokenizer(
         [example["same_label_text"] for example in examples],
         padding=True,
         truncation=True,
         max_length=512,
         return_tensors="pt",
-    )  # type: ignore
+    )
 
     labels = []
     for i in range(len(examples)):

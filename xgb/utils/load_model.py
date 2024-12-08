@@ -48,10 +48,9 @@ def load_l2v(
         "McGill-NLP/LLM2Vec-Meta-Llama-3-8B-Instruct-mntp-unsup-simcse",
     )
     decoder = decoder.merge_and_unload()
-    # 今回の実験で学習したモデルの重みをマージ
+    # 今回の実験で学習したモデルの重みを
     decoder = PeftModel.from_pretrained(
         decoder,
         model_path,
     )
-    decoder = decoder.merge_and_unload()
     return decoder, tokenizer

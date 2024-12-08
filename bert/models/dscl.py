@@ -105,4 +105,4 @@ class SimCSEModel(nn.Module):
 
             loss += -1 * loss_i / len(labels[i])
 
-        return ModelOutput(loss=loss)
+        return ModelOutput(loss=loss[0]) # type: ignore

@@ -23,11 +23,11 @@ test_dataset = load_dataset("Harutiin/eurlex-for-bert", split="test")
 
 # データの作成
 # 訓練
-X_train = embed_bert(train_dataset["text"], tokenizer, encoder) # type: ignore
-y_train = train_dataset["labels"] # type: ignore
+X_train = embed_bert(train_dataset["text"], tokenizer, encoder)  # type: ignore
+y_train = train_dataset["labels"]  # type: ignore
 # テスト
-X_test = embed_bert(test_dataset["text"], tokenizer, encoder) # type: ignore
-y_test = test_dataset["labels"] # type: ignore
+X_test = embed_bert(test_dataset["text"], tokenizer, encoder)  # type: ignore
+y_test = test_dataset["labels"]  # type: ignore
 # `y_train` と `y_val` を NumPy 配列に変換
 y_train = np.array(y_train)
 y_test = np.array(y_test)

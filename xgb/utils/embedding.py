@@ -6,13 +6,15 @@ from transformers import (
     PreTrainedTokenizer,
     PreTrainedTokenizerFast,
 )
+from openai import OpenAI
+from config import setting
 
 
 def embed_bert(
     texts: list[str],
     tokenizer: PreTrainedTokenizer | PreTrainedTokenizerFast,
     encoder: nn.Module,
-    batch_size: int = 64,
+    batch_size: int = 256,
 ) -> np.ndarray:
     """bert SimCSEのモデルを用いてテキストの埋め込みを計算"""
     embeddings = []
@@ -87,3 +89,18 @@ def embed_l2v(
 
     # バッチ処理した埋め込みを結合
     return np.concatenate(embeddings, axis=0)
+
+
+client = OpenAI(api_key=setting.open_api_key)
+
+
+def embed_openai(texts: list[str], batch_size=512) -> np.ndarray:
+    embeddings = []
+    for i in tqdm(range(0, len(texts), batch_size), desc="Embedding Data in Batches"):
+        batch_texts = texts[i : i + batch_size]
+        response = client.embeddings.create(
+            input=batch_texts, model="text-embedding-3-large"
+        )
+        batch_embeddings = [item.embedding for item in response.data]
+        embeddings.extend(batch_embeddings)
+    return np.array(embeddings)

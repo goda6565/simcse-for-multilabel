@@ -20,7 +20,6 @@ class SimCSEModel(nn.Module):
 
         # モデル名からエンコーダを初期化する
         self.encoder = model
-
         # MLP層の次元数
         self.hidden_size = self.encoder.config.hidden_size
         # MLP層の線形層

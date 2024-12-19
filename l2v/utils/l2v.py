@@ -45,7 +45,8 @@ def setup_l2v() -> tuple[nn.Module, PreTrainedTokenizer | PreTrainedTokenizerFas
 
     # 教師なしモデルの読み込み
     model = PeftModel.from_pretrained(
-        model, "McGill-NLP/LLM2Vec-Meta-Llama-3-8B-Instruct-mntp-unsup-simcse",
+        model,
+        "McGill-NLP/LLM2Vec-Meta-Llama-3-8B-Instruct-mntp-unsup-simcse",
         ignore_mismatched_sizes=True,
     )
     model = model.merge_and_unload()

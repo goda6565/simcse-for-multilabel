@@ -4,7 +4,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 from transformers.utils import ModelOutput
 from transformers import BatchEncoding
-from bert.models.coefficient import simpson_coefficient
+from utils.coefficient import simpson_coefficient
+
 
 class SimCSEModel(nn.Module):
     """sscl SimCSEのモデル"""
@@ -103,4 +104,4 @@ class SimCSEModel(nn.Module):
 
             loss += -1 * loss_i / len(labels[i])
 
-        return ModelOutput(loss=loss[0]) # type: ignore
+        return ModelOutput(loss=loss[0])  # type: ignore

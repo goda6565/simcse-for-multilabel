@@ -3,7 +3,10 @@ import numpy as np
 import xgboost as xgb
 from typing import Literal
 from xgb.utils.models import XGBScore
+from datasets import Dataset, load_dataset
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+
+test_dataset = load_dataset("Harutiin/eurlex-for-bert", split="test")
 
 
 def execute_cls(
@@ -11,8 +14,8 @@ def execute_cls(
     y_train: np.ndarray,
     X_test: np.ndarray,
     y_test: np.ndarray,
-    model_name: Literal["bert", "l2v"],
-    type: Literal["unsup", "scl", "sscl", "jscl", "dscl"],
+    model_name: Literal["bert", "l2v", "openai"],
+    type: Literal["unsup", "scl", "sscl", "jscl", "dscl", "openai"],
 ) -> XGBScore:
     # wandb run を開始
     run = wandb.init(project="xgb-cls", name=f"{model_name}-{type}")
@@ -43,6 +46,18 @@ def execute_cls(
 
     # wandb run を終了
     run.finish()
+
+    # データセットを作成
+    output_dataset = Dataset.from_dict(
+        {
+            "pred": pred,
+            "y_test": y_test,
+            "X_test": test_dataset["text"],  # type: ignore
+        }
+    )
+
+    # CSV に保存
+    output_dataset.to_csv(f"outputs/xgb/{model_name}/{type}.csv", index=False)
 
     return XGBScore(
         accuracy=float(f"{accuracy:.5f}"),

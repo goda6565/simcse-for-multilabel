@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from transformers.utils import ModelOutput
 from transformers import BatchEncoding
-from bert.models.coefficient import jaccard_index
+from utils.coefficient import jaccard_index
 
 
 class SimCSEModel(nn.Module):
@@ -104,4 +104,4 @@ class SimCSEModel(nn.Module):
                 loss_i += jaccard * torch.log(sim_ij / denominator)
 
             loss += -1 * loss_i / len(labels[i])
-        return ModelOutput(loss=loss[0]) # type: ignore
+        return ModelOutput(loss=loss[0])  # type: ignore

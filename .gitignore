@@ -11,3 +11,5 @@ wandb
 .env
 
 .ruff_cache
+
+nohup.out

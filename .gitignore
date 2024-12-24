@@ -10,4 +10,4 @@ wandb
 
 .env
 
-nohup.out
+.ruff_cache

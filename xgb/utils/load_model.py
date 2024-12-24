@@ -12,7 +12,10 @@ from transformers import (
 
 def load_bert(
     model_path: str,
+    base: bool = False,
 ) -> tuple[nn.Module, PreTrainedTokenizer | PreTrainedTokenizerFast]:
+    if base:
+        model_path = "princeton-nlp/unsup-simcse-bert-base-uncased"
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     encoder = AutoModel.from_pretrained(model_path)
     return encoder, tokenizer
@@ -20,6 +23,7 @@ def load_bert(
 
 def load_l2v(
     model_path: str,
+    base: bool = False,
 ) -> tuple[nn.Module, PreTrainedTokenizer | PreTrainedTokenizerFast]:
     tokenizer = AutoTokenizer.from_pretrained(
         "McGill-NLP/LLM2Vec-Meta-Llama-3-8B-Instruct-mntp"
@@ -47,10 +51,13 @@ def load_l2v(
         decoder,
         "McGill-NLP/LLM2Vec-Meta-Llama-3-8B-Instruct-mntp-unsup-simcse",
     )
-    decoder = decoder.merge_and_unload()
-    # 今回の実験で学習したモデルの重みを
-    decoder = PeftModel.from_pretrained(
-        decoder,
-        model_path,
-    )
-    return decoder, tokenizer
+    if base:
+        return decoder, tokenizer
+    else:
+        decoder = decoder.merge_and_unload()
+        # 今回の実験で学習したモデルの重みを
+        decoder = PeftModel.from_pretrained(
+            decoder,
+            model_path,
+        )
+        return decoder, tokenizer

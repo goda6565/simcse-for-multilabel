@@ -11,8 +11,6 @@ from l2v.utils.l2v import setup_l2v
 import argparse
 import wandb
 
-wandb.init(project="simcse-l2v", name="jscl")
-
 
 # 乱数のシードを設定する
 set_seed(42)
@@ -35,16 +33,13 @@ parser.add_argument(
 )
 parser.add_argument("--learning_rate", type=float, default=1e-5, help="Learning rate")
 parser.add_argument(
-    "--record_steps", type=int, default=60, help="Number of record steps"
-)
-parser.add_argument(
     "--max_length", type=int, default=512, help="Maximum length of input text"
 )
 
 # 引数を解析
 args = parser.parse_args()
 
-wandb.init(project="simcse-l2v", name=f"jscl-{args.dataset_name}")
+wandb.init(project=args.dataset_name, name="l2v-jscl")
 
 print("=" * 40)
 print("Arguments")
@@ -53,15 +48,18 @@ print(f"output_dir: {args.output_dir}")
 print(f"dataset_name: {args.dataset_name}")
 print(f"per_device_batch_size: {args.per_device_batch_size}")
 print(f"learning_rate: {args.learning_rate}")
-print(f"record_steps: {args.record_steps}")
 print(f"max_length: {args.max_length}")
-print("=" * 40)
 
 # データ読み込み
 train_dataset, valid_dataset, test_dataset = load_data(args.dataset_name)
 
 # peように訓練データを再構成(positive_ensured)
 train_dataset = create_same_label_datasets(train_dataset)
+
+step_size = int(len(train_dataset) / args.per_device_batch_size / 5 / 8)
+
+print(f"record_steps: {step_size}")
+print("=" * 40)
 
 
 model, tokenizer = setup_l2v()
@@ -98,11 +96,11 @@ training_args = TrainingArguments(
     per_device_eval_batch_size=args.per_device_batch_size,  # 評価時のバッチサイズ
     learning_rate=args.learning_rate,  # 学習率
     num_train_epochs=1,  # 訓練エポック数
-    gradient_accumulation_steps=4,  # 勾配蓄積のステップ数
+    gradient_accumulation_steps=8,  # 勾配蓄積のステップ数
     evaluation_strategy="steps",  # 検証セットによる評価のタイミング
-    eval_steps=args.record_steps,  # 検証セットによる評価を行う訓練ステップ数の間隔
-    logging_steps=args.record_steps,  # ロギングを行う訓練ステップ数の間隔
-    save_steps=args.record_steps,  # チェックポイントを保存する訓練ステップ数の間隔
+    eval_steps=step_size,  # 検証セットによる評価を行う訓練ステップ数の間隔
+    logging_steps=step_size,  # ロギングを行う訓練ステップ数の間隔
+    save_steps=step_size,  # チェックポイントを保存する訓練ステップ数の間隔
     save_total_limit=1,  # 保存するチェックポイントの最大数
     bf16=True,  # bf16学習の有効化
     load_best_model_at_end=True,  # 最良のモデルを訓練終了後に読み込むか

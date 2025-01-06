@@ -17,9 +17,10 @@ def execute_cls(
     model_name: Literal["bert", "l2v", "openai", "e5"],
     type: Literal["unsup", "scl", "sscl", "jscl", "dscl", "base"],
     dataset_name: Literal["wrime", "eurlex", "semeval-en", "semeval-ar", "semeval-es"],
+    batch_size: str = "",
 ) -> XGBScore:
     # wandb run を開始
-    run = wandb.init(project=f"xgb-{dataset_name}", name=f"{model_name}-{type}")
+    run = wandb.init(project=f"xgb-{dataset_name}", name=f"{model_name}-{type}-{batch_size}")
     """XGBoostを使って分類を行う"""
     # モデルを初期化
     xgb.set_config(verbosity=1)

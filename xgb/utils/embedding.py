@@ -54,7 +54,7 @@ def embed_l2v(
     tokenizer: PreTrainedTokenizer | PreTrainedTokenizerFast,
     decoder: nn.Module,
     max_length: int,
-    batch_size: int = 64,
+    batch_size: int = 256,
 ) -> np.ndarray:
     """l2v SimCSEのモデルを用いてテキストの埋め込みを計算"""
     embeddings = []

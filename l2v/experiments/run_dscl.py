@@ -39,7 +39,7 @@ parser.add_argument(
 # 引数を解析
 args = parser.parse_args()
 
-wandb.init(project=args.dataset_name, name="l2v-dscl")
+wandb.init(project=args.dataset_name, name=f"l2v-dscl batch size: {args.per_device_batch_size}")
 
 print("=" * 40)
 print("Arguments")
@@ -56,7 +56,7 @@ train_dataset, valid_dataset, test_dataset = load_data(args.dataset_name)
 # peように訓練データを再構成(positive_ensured)
 train_dataset = create_same_label_datasets(train_dataset)
 
-step_size = int(len(train_dataset) / args.per_device_batch_size / 5 / 8)
+step_size = int(len(train_dataset) / args.per_device_batch_size / 5 / (32/args.per_device_batch_size))
 
 print(f"record_steps: {step_size}")
 print("=" * 40)
@@ -96,7 +96,7 @@ training_args = TrainingArguments(
     per_device_eval_batch_size=args.per_device_batch_size,  # 評価時のバッチサイズ
     learning_rate=args.learning_rate,  # 学習率
     num_train_epochs=1,  # 訓練エポック数
-    gradient_accumulation_steps=8,  # 勾配蓄積のステップ数
+    gradient_accumulation_steps=int(32/args.per_device_batch_size),  # 勾配蓄積のステップ数
     evaluation_strategy="steps",  # 検証セットによる評価のタイミング
     eval_steps=step_size,  # 検証セットによる評価を行う訓練ステップ数の間隔
     logging_steps=step_size,  # ロギングを行う訓練ステップ数の間隔

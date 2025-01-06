@@ -39,7 +39,7 @@ parser.add_argument(
 # 引数を解析
 args = parser.parse_args()
 
-wandb.init(project=args.dataset_name, name="bert-dscl")
+wandb.init(project=args.dataset_name, name=f"bert-dscl batch size: {args.per_device_batch_size}")
 
 print("=" * 40)
 print("Arguments")

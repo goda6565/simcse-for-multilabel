@@ -2,7 +2,7 @@ import torch
 from torch import Tensor
 from transformers import BatchEncoding, AutoTokenizer
 
-base_model_name = "princeton-nlp/unsup-simcse-bert-base-uncased"
+base_model_name = "google-bert/bert-base-multilingual-cased"
 tokenizer = AutoTokenizer.from_pretrained(base_model_name)
 
 

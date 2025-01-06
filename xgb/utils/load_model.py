@@ -15,7 +15,7 @@ def load_bert(
     base: bool = False,
 ) -> tuple[nn.Module, PreTrainedTokenizer | PreTrainedTokenizerFast]:
     if base:
-        model_path = "princeton-nlp/unsup-simcse-bert-base-uncased"
+        model_path = "google-bert/bert-base-multilingual-cased"
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     encoder = AutoModel.from_pretrained(model_path)
     return encoder, tokenizer

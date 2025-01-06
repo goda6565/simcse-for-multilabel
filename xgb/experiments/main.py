@@ -29,6 +29,7 @@ parser.add_argument(
 parser.add_argument(
     "--max_length", type=int, required=True, help="Maximum length of input text"
 )
+parser.add_argument("--output_dir", type=str, required=True, help="Output directory")
 
 # 引数を解析
 args = parser.parse_args()
@@ -42,7 +43,7 @@ print(f"dataset_name: {args.dataset_name}")
 print(f"max_length: {args.max_length}")
 
 # モデル読み込み
-model_path = f"outputs/{args.model_name}/{args.model_type}/{args.dataset_name}"
+model_path = args.output_dir
 if args.model_name == "l2v" and args.model_type == "base":
     decoder, tokenizer = load_l2v(f"{model_path}/decoder", True)
     model = decoder
@@ -86,6 +87,9 @@ else:
 y_train = np.array(y_train)
 y_test = np.array(y_test)
 
+path = args.output_dir
+batch_size = path.split("/")[-1]
+
 # モデルの学習
 result = execute_cls(
     X_train,
@@ -96,5 +100,6 @@ result = execute_cls(
     model_name=args.model_name,
     type=args.model_type,
     dataset_name=args.dataset_name,
+    batch_size=batch_size,
 )
 print(result)
